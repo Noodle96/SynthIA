@@ -8,8 +8,24 @@ const openai = new OpenAI({
 export async function POST(req:Request) {
 	try {
 		const {userId } = auth();
+		console.log('==========userID==========================');
+		console.log(userId);
+		console.log('====================================');		
+		
 		const body = await req.json();
+		console.log('================body====================');
+		console.log(body);
+		console.log('====================================');		
+		
+
 		const {messages} = body;
+		console.log('============messages========================');
+		console.log(messages);
+		console.log(messages[0].role);
+		console.log(messages[0].content);
+
+		console.log('====================================');		
+		
 		if(!userId){
 			return new NextResponse("Unauthorized",{status: 401});
 		}
@@ -23,6 +39,13 @@ export async function POST(req:Request) {
 			model: "gpt-3.5-turbo",
  			messages
 		});
+		console.log('=============chatCompletation=======================');
+		console.log(chatCompletion);
+		console.log('====================================');
+		console.log('====================================');
+		console.log("Desde POST");
+		console.log(chatCompletion.choices[0].message);
+		console.log('====================================');
 		return NextResponse.json(chatCompletion.choices[0].message);
 		// console.log(chatCompletion.choices[0].message);
 

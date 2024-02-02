@@ -13,13 +13,21 @@ import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import { Empty } from '@/components/empty';
+import { Loader } from '@/components/loader';
+import { cn } from '@/lib/utils';
+import { UserAvatar } from '@/components/user-avatar';
+import { OpenAIAvatar } from '@/components/openai-avatar';
 
 
 
 
 const ConversationPage = () => {
 	const router = useRouter();
-	const [messages, setMessages] = useState<ChatCompletionMessageParam[]>([]);
+	//esto funcionaba pero me daba errores con el tipo de dato
+	// const [messages, setMessages] = useState<ChatCompletionMessageParam[]>([]);
+
+	const [messages, setMessages] = useState<any[]>([]);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -57,6 +65,10 @@ const ConversationPage = () => {
 			console.log('==============response.data======================');
 			console.log(response.data);
 			console.log('====================================');
+			console.log('==================typeof==================');
+			console.log(typeof response.data);
+			
+			
 			setMessages((current) => [...current, userMessage, response.data]);
 			form.reset();
 		}catch(error:any){
@@ -111,15 +123,33 @@ const ConversationPage = () => {
 					</Form>
 				</div>
 				<div className=' space-y-4 mt-4'>
+					{isLoading &&
+						(
+							<div className=' rounded-lg p-8 bg-muted w-full flex justify-center items-center'>
+								<Loader />
+							</div>
+						)
+					}
+
+					{/* Renderizado de mensajes vacios */}
+					{messages.length===0 && !isLoading &&
+						(
+						<Empty label='Ninguna conversacion iniciada' />
+						)
+					}
+
+					{/* Renderizado de las consultas */}
 					<div className=' flex flex-col-reverse gap-y-4'>
 						{messages.map((item) => (
-							<div key={item.role}>
-								{item.content}
-								{/* {typeof item === 'string' ? (
-									<div>{item}</div>
-								) : (
-									<div>{item.content}</div>
-								)} */}
+							<div
+								key={item.content}
+								className={cn(" p-8 w-full flex items-start  gap-x-8 rounded-lg", item.role=== 'user'? " bg-white border border-black/10":"bg-muted")}
+							>
+								{/* Renderizando el userAvatar or OpenAiAvatar */}
+								{item.role === 'user' ? <UserAvatar /> : <OpenAIAvatar />}
+								<p className=' text-sm'>
+									{item.content}
+								</p>
 							</div>
 						))}
 					</div>

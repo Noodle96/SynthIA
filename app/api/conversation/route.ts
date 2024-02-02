@@ -8,6 +8,8 @@ const openai = new OpenAI({
 export async function POST(req:Request) {
 	try {
 		const {userId } = auth();
+		console.log('========Desde POST : app/api/conversation/route.ts==================');
+		
 		console.log('==========userID==========================');
 		console.log(userId);
 		console.log('====================================');		
